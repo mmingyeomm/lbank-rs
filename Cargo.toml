@@ -1,6 +1,16 @@
 [package]
-name = "lbank-api"
+name = "lbank-rs"
 version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+hex = "0.4"
+hmac = "0.12.1"
+sha2 = "0.10.8"
+serde = { version = "1.0.197", features = ["derive"] }
+serde_json = "1.0"
+error-chain = { version = "0.12.4", default-features = false }
+reqwest = { version = "0.11.24", features = ["blocking", "json"] }
+tungstenite = { version = "0.21.0", features = ["native-tls"] }
+url = "2.5.0"
+clap = "4.5.2"

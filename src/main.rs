@@ -1,3 +1,5 @@
+
 fn main() {
-    println!("Hello, world!");
+    // Create a new client instance
+    
 }
