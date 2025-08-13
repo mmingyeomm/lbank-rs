@@ -2,6 +2,8 @@
 name = "lbank-rs"
 version = "0.1.0"
 edition = "2024"
+description = "lbank rust library" 
+license = "MIT"
 
 [dependencies]
 hex = "0.4"
