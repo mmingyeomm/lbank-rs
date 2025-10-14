@@ -83,41 +83,47 @@ pub enum Futures {
     Income,
 }
 
-pub trait LBank{ 
-
-    fn new(api_key : Option<String>, api_secret : Option<String>) -> Self;
-
-    fn new_with_config(api_key : Option<String>, api_secret : Option<String>, config : &Config) -> Self; 
-
-    fn set_verbose(&mut self, verbose : bool);  
-
-    fn enable_async(&mut self); 
-
+pub trait LBank { 
+    fn new(api_key: Option<String>, api_secret: Option<String>) -> Self;
+    fn new_with_config(api_key: Option<String>, api_secret: Option<String>, config: &Config) -> Self;
+    fn new_async(api_key: Option<String>, api_secret: Option<String>) -> Self;
+    fn new_async_with_config(api_key: Option<String>, api_secret: Option<String>, config: &Config) -> Self;
+    fn set_verbose(&mut self, verbose: bool);
 }
 
 
-impl LBank for General{
+impl LBank for General {
     fn new(api_key: Option<String>, secret_key: Option<String>) -> General {
         Self::new_with_config(api_key, secret_key, &Config::default())
     }
 
     fn new_with_config(
-        api_key: Option<String>, secret_key: Option<String>, config: &Config,
+        api_key: Option<String>, 
+        secret_key: Option<String>, 
+        config: &Config,
     ) -> General {
         General {
-            client: Client::new(api_key, secret_key),
+            client: Client::new_with_config(api_key, secret_key, config),
+        }
+    }
+
+    fn new_async(api_key: Option<String>, secret_key: Option<String>) -> General {
+        Self::new_async_with_config(api_key, secret_key, &Config::default())
+    }
+
+    fn new_async_with_config(
+        api_key: Option<String>,
+        secret_key: Option<String>,
+        config: &Config,
+    ) -> General {
+        General {
+            client: Client::new_async_with_config(api_key, secret_key, config),
         }
     }
 
     fn set_verbose(&mut self, verbose: bool) {
         self.client.set_verbose(verbose);
     }
-
-    fn enable_async(&mut self) {
-        self.client.enable_async();
-    }
-
-
 }
 
 
