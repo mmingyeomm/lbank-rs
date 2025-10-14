@@ -4,3 +4,4 @@ pub mod x;
 pub mod api;
 pub mod config; 
 pub mod general;
+pub mod errors;
