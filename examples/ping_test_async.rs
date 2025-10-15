@@ -1,17 +1,18 @@
-use lbank_rs::general::General;
-use lbank_rs::api::LBank;
+use lbank_rs::general::AsyncGeneral;
+use lbank_rs::api::AsyncLBank;
 
-fn main() {
-    println!("Testing LBank API ping...\n");
+#[tokio::main]
+async fn main() {
+    println!("Testing LBank API ping (async)...\n");
 
-    // Create a client (no API keys needed for ping)
-    let mut general: General = LBank::new(None, None);
+    // Create an async client (no API keys needed for ping)
+    let mut general: AsyncGeneral = AsyncLBank::new(None, None);
 
     // Enable verbose mode to see the URL
     general.set_verbose(true);
 
     println!("Calling ping()...\n");
-    match general.ping() {
+    match general.ping().await {
         Ok(response) => {
             println!("\n✅ Success!");
             println!("Response: {}", response);
@@ -21,4 +22,3 @@ fn main() {
         }
     }
 }
-

@@ -1,8 +1,8 @@
 use crate::client::Client;
-use crate::api::API;
-use crate::api::Spot;
+use crate::api::{API, Spot};
 use crate::errors::Result;
 
+/// General API client for synchronous operations
 #[derive(Clone)]
 pub struct General {
     pub client: Client,
@@ -11,7 +11,6 @@ pub struct General {
 impl General {
     /// Ping the LBank API server
     pub fn ping(&self) -> Result<String> {
-        // LBank ping requires POST request
         self.client.post(API::Spot(Spot::Ping), None)
     }
 }

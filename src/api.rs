@@ -1,4 +1,8 @@
-use crate::{client::Client, config::Config, general::General};
+use crate::{
+    client::{Client, AsyncClient},
+    config::Config,
+    general::{General, AsyncGeneral}
+};
 
 pub enum API {
     Spot(Spot),
@@ -163,14 +167,19 @@ impl From<API> for String {
 }
 
 
-pub trait LBank { 
+/// Trait for blocking LBank API clients
+pub trait LBank {
     fn new(api_key: Option<String>, api_secret: Option<String>) -> Self;
     fn new_with_config(api_key: Option<String>, api_secret: Option<String>, config: &Config) -> Self;
-    fn new_async(api_key: Option<String>, api_secret: Option<String>) -> Self;
-    fn new_async_with_config(api_key: Option<String>, api_secret: Option<String>, config: &Config) -> Self;
     fn set_verbose(&mut self, verbose: bool);
 }
 
+/// Trait for async LBank API clients
+pub trait AsyncLBank {
+    fn new(api_key: Option<String>, api_secret: Option<String>) -> Self;
+    fn new_with_config(api_key: Option<String>, api_secret: Option<String>, config: &Config) -> Self;
+    fn set_verbose(&mut self, verbose: bool);
+}
 
 impl LBank for General {
     fn new(api_key: Option<String>, secret_key: Option<String>) -> General {
@@ -178,8 +187,8 @@ impl LBank for General {
     }
 
     fn new_with_config(
-        api_key: Option<String>, 
-        secret_key: Option<String>, 
+        api_key: Option<String>,
+        secret_key: Option<String>,
         config: &Config,
     ) -> General {
         General {
@@ -187,17 +196,23 @@ impl LBank for General {
         }
     }
 
-    fn new_async(api_key: Option<String>, secret_key: Option<String>) -> General {
-        Self::new_async_with_config(api_key, secret_key, &Config::default())
+    fn set_verbose(&mut self, verbose: bool) {
+        self.client.set_verbose(verbose);
+    }
+}
+
+impl AsyncLBank for AsyncGeneral {
+    fn new(api_key: Option<String>, secret_key: Option<String>) -> AsyncGeneral {
+        Self::new_with_config(api_key, secret_key, &Config::default())
     }
 
-    fn new_async_with_config(
+    fn new_with_config(
         api_key: Option<String>,
         secret_key: Option<String>,
         config: &Config,
-    ) -> General {
-        General {
-            client: Client::new_async_with_config(api_key, secret_key, config),
+    ) -> AsyncGeneral {
+        AsyncGeneral {
+            client: AsyncClient::new_with_config(api_key, secret_key, config),
         }
     }
 
