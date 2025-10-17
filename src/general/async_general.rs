@@ -13,4 +13,11 @@ impl AsyncGeneral {
     pub async fn ping(&self) -> Result<String> {
         self.client.post(API::Spot(Spot::Ping), None).await
     }
+
+    /// Get server timestamp
+    pub async fn time(&self) -> Result<String> {
+        self.client.get(API::Spot(Spot::Time), None).await
+    }
 }
+
+

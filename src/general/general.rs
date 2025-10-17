@@ -13,4 +13,9 @@ impl General {
     pub fn ping(&self) -> Result<String> {
         self.client.post(API::Spot(Spot::Ping), None)
     }
+
+    /// Get server timestamp
+    pub fn time(&self) -> Result<String> {
+        self.client.get(API::Spot(Spot::Time), None)
+    }
 }

@@ -7,7 +7,7 @@ use crate::{
 pub enum API {
     Spot(Spot),
     Savings(Sapi),
-    Futures(Futures),
+    // Futures(Futures), // TODO: LBank Contract API endpoints need to be properly mapped
 }
 
 
@@ -27,6 +27,9 @@ pub enum Spot {
     BookTicker,
     Order,
     OrderTest,
+    CancelOrder,
+    CancelClientOrders,
+    BatchCreateOrder,
     OpenOrders,
     AllOrders,
     Oco,
@@ -36,15 +39,24 @@ pub enum Spot {
     Account,
     MyTrades,
     UserDataStream,
+    RefreshUserDataStream,
+    CloseUserDataStream,
 }
 
 pub enum Sapi {
+    SystemStatus,
     AllCoins,
     AssetDetail,
     DepositAddress,
-    SpotFuturesTransfer,
+    DepositHistory,
+    WithdrawalHistory,
+    Withdraw,
+    TradeFeeRate,
 }
 
+// TODO: LBank Contract/Futures API - These endpoints need to be verified against LBank's actual Contract API
+// The endpoints below are Binance-style and are NOT correct for LBank
+/*
 pub enum Futures {
     Ping,
     Time,
@@ -86,6 +98,7 @@ pub enum Futures {
     UserDataStream,
     Income,
 }
+*/
 
 impl From<API> for String {
     fn from(item: API) -> Self {
@@ -105,6 +118,9 @@ impl From<API> for String {
                 Spot::BookTicker => "/v2/supplement/ticker/bookTicker.do",
                 Spot::Order => "/v2/supplement/create_order.do",
                 Spot::OrderTest => "/v2/supplement/create_order_test.do",
+                Spot::CancelOrder => "/v2/cancel_order.do",
+                Spot::CancelClientOrders => "/v2/cancel_clientOrders.do",
+                Spot::BatchCreateOrder => "/v2/batch_create_order.do",
                 Spot::OpenOrders => "/v2/supplement/orders_info_no_deal.do",
                 Spot::AllOrders => "/v2/supplement/orders_info_history.do",
                 Spot::Oco => "/v2/supplement/create_order.do",
@@ -114,13 +130,21 @@ impl From<API> for String {
                 Spot::Account => "/v2/supplement/user_info_account.do",
                 Spot::MyTrades => "/v2/supplement/transaction_history.do",
                 Spot::UserDataStream => "/v2/subscribe/get_key.do",
+                Spot::RefreshUserDataStream => "/v2/subscribe/refresh_key.do",
+                Spot::CloseUserDataStream => "/v2/subscribe/destroy_key.do",
             },
             API::Savings(route) => match route {
+                Sapi::SystemStatus => "/v2/supplement/system_status.do",
                 Sapi::AllCoins => "/v2/supplement/user_info.do",
                 Sapi::AssetDetail => "/v2/supplement/asset_detail.do",
                 Sapi::DepositAddress => "/v2/supplement/get_deposit_address.do",
-                Sapi::SpotFuturesTransfer => "/v2/supplement/withdraw.do",
+                Sapi::DepositHistory => "/v2/supplement/deposit_history.do",
+                Sapi::WithdrawalHistory => "/v2/supplement/withdraws.do",
+                Sapi::Withdraw => "/v2/supplement/withdraw.do",
+                Sapi::TradeFeeRate => "/v2/supplement/customer_trade_fee.do",
             },
+            // TODO: Implement LBank Contract API endpoints when available
+            /*
             API::Futures(route) => match route {
                 Futures::Ping => "/fapi/v1/ping",
                 Futures::Time => "/fapi/v1/time",
@@ -162,6 +186,7 @@ impl From<API> for String {
                 Futures::UserDataStream => "/fapi/v1/listenKey",
                 Futures::Income => "/fapi/v1/income",
             },
+            */
         })
     }
 }
@@ -169,13 +194,6 @@ impl From<API> for String {
 
 /// Trait for blocking LBank API clients
 pub trait LBank {
-    fn new(api_key: Option<String>, api_secret: Option<String>) -> Self;
-    fn new_with_config(api_key: Option<String>, api_secret: Option<String>, config: &Config) -> Self;
-    fn set_verbose(&mut self, verbose: bool);
-}
-
-/// Trait for async LBank API clients
-pub trait AsyncLBank {
     fn new(api_key: Option<String>, api_secret: Option<String>) -> Self;
     fn new_with_config(api_key: Option<String>, api_secret: Option<String>, config: &Config) -> Self;
     fn set_verbose(&mut self, verbose: bool);
@@ -199,6 +217,14 @@ impl LBank for General {
     fn set_verbose(&mut self, verbose: bool) {
         self.client.set_verbose(verbose);
     }
+}
+
+
+/// Trait for async LBank API clients
+pub trait AsyncLBank {
+    fn new(api_key: Option<String>, api_secret: Option<String>) -> Self;
+    fn new_with_config(api_key: Option<String>, api_secret: Option<String>, config: &Config) -> Self;
+    fn set_verbose(&mut self, verbose: bool);
 }
 
 impl AsyncLBank for AsyncGeneral {

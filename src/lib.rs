@@ -5,3 +5,6 @@ pub mod api;
 pub mod config; 
 pub mod general;
 pub mod errors;
+pub mod Account;
+pub mod model;
+pub mod util; 

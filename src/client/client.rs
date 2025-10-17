@@ -97,6 +97,42 @@ impl Client {
         let text = self.post(endpoint, params)?;
         Ok(serde_json::from_str(&text)?)
     }
+
+    /// Blocking GET request with signature
+    pub fn get_signed<T: DeserializeOwned>(&self, endpoint: API, params: Option<String>) -> Result<T> {
+        let text = self.get(endpoint, params)?;
+        Ok(serde_json::from_str(&text)?)
+    }
+
+    /// Blocking POST request with signature
+    pub fn post_signed<T: DeserializeOwned>(&self, endpoint: API, params: String) -> Result<T> {
+        let text = self.post(endpoint, Some(params))?;
+        Ok(serde_json::from_str(&text)?)
+    }
+
+    /// Blocking DELETE request with signature
+    pub fn delete_signed<T: DeserializeOwned>(&self, endpoint: API, params: Option<String>) -> Result<T> {
+        let url = format!("{}{}", self.host, String::from(endpoint));
+
+        if self.verbose {
+            println!("DELETE Request URL: {}", url);
+            if let Some(ref p) = params {
+                println!("Request Params: {}", p);
+            }
+        }
+
+        let mut request = self.http_client.delete(&url);
+
+        if let Some(body) = params {
+            request = request
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .body(body);
+        }
+
+        let response = request.send()?;
+        let text = response.text()?;
+        Ok(serde_json::from_str(&text)?)
+    }
 }
 
 #[cfg(test)]

@@ -2,19 +2,19 @@ use lbank_rs::general::General;
 use lbank_rs::api::LBank;
 
 fn main() {
-    println!("Testing LBank API ping (10 requests - blocking)...\n");
+    println!("Testing LBank API time endpoint (synchronous)...\n");
 
-    // Create a client (no API keys needed for ping)
+    // Create a client (no API keys needed for time endpoint)
     let mut general: General = LBank::new(None, None);
 
     // Enable verbose mode to see the URL
     general.set_verbose(true);
 
-    println!("Making 10 ping requests sequentially...\n");
+    println!("Making 5 time requests sequentially...\n");
 
-    for i in 1..=30 {
+    for i in 1..=5 {
         println!("Request #{}", i);
-        match general.ping() {
+        match general.time() {
             Ok(response) => {
                 println!("✅ Request #{} Success!", i);
                 println!("Response: {}", response);
@@ -26,5 +26,6 @@ fn main() {
         println!("---");
     }
 
-    println!("\n🎉 All 30 requests completed!");
+    println!("\n🎉 All 5 requests completed!");
 }
+

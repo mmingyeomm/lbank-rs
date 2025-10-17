@@ -1,24 +1,42 @@
-use lbank_rs::general::AsyncGeneral;
-use lbank_rs::api::AsyncLBank;
+use std::sync::Arc;
+
+use lbank_rs::general::{self, AsyncGeneral, General};
+use lbank_rs::api::{AsyncLBank, LBank};
+use tungstenite::http::response;
 
 #[tokio::main]
 async fn main() {
-    println!("Testing LBank API ping (async)...\n");
+    
+    let general : AsyncGeneral = AsyncLBank::new(None, None); 
 
-    // Create an async client (no API keys needed for ping)
-    let mut general: AsyncGeneral = AsyncLBank::new(None, None);
+    let arcgen = Arc::new(general);  
 
-    // Enable verbose mode to see the URL
-    general.set_verbose(true);
+    let mut handles = Vec::new(); 
 
-    println!("Calling ping()...\n");
-    match general.ping().await {
-        Ok(response) => {
-            println!("\n✅ Success!");
-            println!("Response: {}", response);
-        }
-        Err(e) => {
-            println!("\n❌ Error: {:?}", e);
-        }
+
+    for i in 1..10 {
+
+        let x = arcgen.clone(); 
+        let handle = tokio::spawn(async move {
+
+            match x.ping().await  {
+
+                Ok(response) => {
+                    println!("✅ Thread {} Success: {}", i, response);
+                }
+                Err(e) => {
+                    println!("❌ Thread {} Error: {:?}", i, e);
+                }
+        
+            }
+
+        });
+
+        handles.push(handle);
+
     }
+    
+    let results = futures::future::join_all(handles).await;
+
+
 }
