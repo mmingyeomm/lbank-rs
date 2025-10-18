@@ -1,9 +1,10 @@
 pub mod client;
 pub mod market;
+pub mod wallet;
 pub mod api;
 pub mod config; 
 pub mod common;
 pub mod errors;
-pub mod Account;
+pub mod account;
 pub mod model;
 pub mod util; 
