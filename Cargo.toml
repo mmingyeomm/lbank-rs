@@ -27,3 +27,4 @@ url = "2.5.0"
 clap = "4.5.2"
 uuid = { version = "1.18.1", features = ["v4"] }
 md-5 = "0.10.6"
+dotenv = "0.15.0"

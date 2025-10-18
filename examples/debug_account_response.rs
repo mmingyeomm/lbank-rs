@@ -2,12 +2,15 @@ use lbank_rs::client::Client;
 use lbank_rs::api::{API, Spot};
 use lbank_rs::util::build_signed_request;
 use std::collections::BTreeMap;
+use dotenv::dotenv;
+use std::env;
 
 fn main() {
+    dotenv().ok();
     println!("Debug: LBank Account API Response\n");
 
-    let api_key = "cecf5cad-3c0f-405f-81eb-9bcd914ea08d".to_string();
-    let secret_key = "FEF8E225E1D470D7B3E4D99A31BD7237".to_string();
+    let api_key = env::var("LBANK_API_KEY").expect("LBANK_API_KEY must be set");
+    let secret_key = env::var("LBANK_SECRET_KEY").expect("LBANK_SECRET_KEY must be set");
 
     let mut client = Client::new(Some(api_key.clone()), Some(secret_key.clone()));
     client.set_verbose(true);
