@@ -1,20 +1,20 @@
 use std::sync::Arc;
 
-use lbank_rs::general::{self, AsyncGeneral, General};
+use lbank_rs::common::{self, AsyncCommon, Common};
 use lbank_rs::api::{AsyncLBank, LBank};
 use tungstenite::http::response;
 
 #[tokio::main]
 async fn main() {
     
-    let general : AsyncGeneral = AsyncLBank::new(None, None); 
+    let common : AsyncCommon = AsyncLBank::new(None, None); 
 
-    let arcgen = Arc::new(general);  
+    let arcgen = Arc::new(common);  
 
     let mut handles = Vec::new(); 
 
 
-    for i in 1..10 {
+    for i in 1..30 {
 
         let x = arcgen.clone(); 
         let handle = tokio::spawn(async move {

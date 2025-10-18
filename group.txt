@@ -1,0 +1,334 @@
+# LBANK API Endpoints - Categorized Analysis
+
+## 1. General/Common APIs
+
+### GET /v2/currencyPairs.do
+- **Description**: Get list of available trading pairs
+- **Authentication**: No (Public)
+- **Category**: System Configuration
+
+### GET /v2/accuracy.do
+- **Description**: Get basic information (price/quantity accuracy, min transaction quantity) for all trading pairs
+- **Authentication**: No (Public)
+- **Category**: System Configuration
+
+### GET /v2/withdrawConfigs.do
+- **Description**: Get withdrawal configurations for assets (deprecated, use /v2/assetConfigs.do instead)
+- **Authentication**: No (Public)
+- **Category**: System Configuration
+
+### GET /v2/assetConfigs.do
+- **Description**: Get coin information including deposit/withdrawal configuration for multiple chains
+- **Authentication**: No (Public)
+- **Category**: System Configuration
+
+### GET /v2/timestamp.do
+- **Description**: Get current server timestamp (used for signature generation)
+- **Authentication**: No (Public)
+- **Category**: System Utility
+
+---
+
+## 2. Market Data APIs (Public)
+
+### POST /v2/supplement/system_ping.do
+- **Description**: Test server connectivity / health check
+- **Authentication**: No (Public)
+- **Category**: System Utility
+
+### GET /v2/depth.do
+- **Description**: Get order book depth information (asks/bids)
+- **Authentication**: No (Public)
+- **Category**: Market Data
+- **Parameters**: symbol (trading pair), size (1-200)
+
+### GET /v2/supplement/ticker/price.do
+- **Description**: Get latest price for single or all trading pairs
+- **Authentication**: No (Public)
+- **Category**: Market Data
+
+### GET /v2/supplement/ticker/bookTicker.do
+- **Description**: Get current best bid/ask prices and quantities for a trading pair
+- **Authentication**: No (Public)
+- **Category**: Market Data
+
+### GET /v2/ticker/24hr.do
+- **Description**: Get 24-hour ticker data (high, low, volume, change, turnover, latest price) - excludes ETF pairs
+- **Authentication**: No (Public)
+- **Category**: Market Data
+
+### GET /v2/etfTicker/24hr.do
+- **Description**: Get 24-hour ticker data for Leveraged Tokens (ETF) trading pairs
+- **Authentication**: No (Public)
+- **Category**: Market Data
+
+### GET /v2/supplement/trades.do
+- **Description**: Get list of recent trades for a trading pair
+- **Authentication**: No (Public)
+- **Category**: Market Data
+- **Parameters**: symbol, size, time (optional timestamp filter)
+
+### GET /v2/kline.do
+- **Description**: Get K-line/candlestick data
+- **Authentication**: No (Public)
+- **Category**: Market Data
+- **Parameters**: symbol, size (1-2000), type (minute1/5/15/30, hour1/4/8/12, day1, week1, month1), time
+
+---
+
+## 3. Wallet APIs (Private - Requires Authentication)
+
+### POST /v2/supplement/system_status.do
+- **Description**: Get system status (maintenance or normal)
+- **Authentication**: No (Public but listed in Wallet section)
+- **Category**: System Status
+
+### POST /v2/supplement/user_info.do
+- **Description**: Get all coin balances and multi-chain information for user (deposit/withdrawal support)
+- **Authentication**: Yes (API Key + Signature)
+- **Category**: Wallet Information
+
+### POST /v2/supplement/withdraw.do
+- **Description**: Submit withdrawal request (supports multi-chain)
+- **Authentication**: Yes (API Key + Signature)
+- **Category**: Withdrawal
+- **Parameters**: address, networkName, coin, amount, fee, memo (optional), mark (optional), name (optional), withdrawOrderId (optional), type (optional - 1 for intra-site transfer)
+
+### POST /v2/supplement/deposit_history.do
+- **Description**: Get user's deposit history with filtering
+- **Authentication**: Yes (API Key + Signature)
+- **Category**: Deposit History
+- **Parameters**: status (optional), coin (optional), startTime (optional), endTime (optional)
+
+### POST /v2/supplement/withdraws.do
+- **Description**: Get user's withdrawal history with filtering
+- **Authentication**: Yes (API Key + Signature)
+- **Category**: Withdrawal History
+- **Parameters**: status (optional), coin (optional), withdrawOrderId (optional), startTime (optional), endTime (optional)
+
+### POST /v2/supplement/get_deposit_address.do
+- **Description**: Get deposit address for a specific coin and chain
+- **Authentication**: Yes (API Key + Signature)
+- **Category**: Deposit Address
+- **Parameters**: coin, networkName (optional chain name)
+
+### POST /v2/supplement/asset_detail.do
+- **Description**: Get asset details including withdrawal/deposit status and fees
+- **Authentication**: Yes (API Key + Signature)
+- **Category**: Wallet Information
+- **Parameters**: coin (optional)
+
+---
+
+## 4. Spot Trading APIs (Private - Requires Authentication)
+
+### POST /v2/supplement/create_order_test.do
+- **Description**: Test order creation without actually placing it
+- **Authentication**: Yes (API Key + Signature)
+- **Category**: Order Testing
+- **Parameters**: symbol, type (buy/sell/buy_market/sell_market/buy_maker/sell_maker/buy_ioc/sell_ioc/buy_fok/sell_fok), price (conditional), amount (conditional), custom_id (optional), window (optional order expiration time)
+
+### POST /v2/supplement/create_order.do
+- **Description**: Create/place a new order (market/limit/maker/IOC/FOK)
+- **Authentication**: Yes (API Key + Signature)
+- **Category**: Order Creation
+- **Parameters**: symbol, type, price (conditional), amount (conditional), custom_id (optional), window (optional)
+- **Order Types**:
+  - buy/sell (limit orders)
+  - buy_market/sell_market (market orders)
+  - buy_maker/sell_maker (post-only orders)
+  - buy_ioc/sell_ioc (immediate-or-cancel)
+  - buy_fok/sell_fok (fill-or-kill)
+
+### POST /v2/supplement/cancel_order.do
+- **Description**: Cancel a specific order by orderId or custom_id
+- **Authentication**: Yes (API Key + Signature)
+- **Category**: Order Cancellation
+- **Parameters**: symbol, orderId (conditional), origClientOrderId (conditional) - must provide one
+
+### POST /v2/supplement/cancel_order_by_symbol.do
+- **Description**: Cancel all pending orders for a specific trading pair
+- **Authentication**: Yes (API Key + Signature)
+- **Category**: Order Cancellation
+- **Parameters**: symbol
+
+### POST /v2/supplement/orders_info.do
+- **Description**: Query specific order details by orderId or custom_id
+- **Authentication**: Yes (API Key + Signature)
+- **Category**: Order Query
+- **Parameters**: symbol, orderId (conditional), origClientOrderId (conditional) - must provide one
+
+### POST /v2/supplement/orders_info_no_deal.do
+- **Description**: Get all current open/pending orders for a trading pair
+- **Authentication**: Yes (API Key + Signature)
+- **Category**: Order Query
+- **Parameters**: symbol, current_page, page_length (1-200)
+
+### POST /v2/supplement/orders_info_history.do
+- **Description**: Get historical orders (default: last 24 hours, cancelled and filled orders)
+- **Authentication**: Yes (API Key + Signature)
+- **Category**: Order History
+- **Parameters**: symbol, current_page, page_length (1-200), status (optional)
+
+### POST /v2/supplement/user_info_account.do
+- **Description**: Get account information including trading/withdrawal/deposit permissions and balances
+- **Authentication**: Yes (API Key + Signature)
+- **Category**: Account Information
+
+### POST /v2/supplement/transaction_history.do
+- **Description**: Get historical trade/transaction details for a trading pair
+- **Authentication**: Yes (API Key + Signature)
+- **Category**: Trade History
+- **Parameters**: symbol, startTime (optional), endTime (optional - max 2 day window), fromId (optional), limit (optional, default 100, max 100)
+
+---
+
+## 5. Account APIs (Private - Requires Authentication)
+
+### POST /v2/supplement/customer_trade_fee.do
+- **Description**: Query user's trading fee rates (maker/taker commission) for trading pairs
+- **Authentication**: Yes (API Key + Signature)
+- **Category**: Account Configuration
+- **Parameters**: category (optional trading pair filter)
+
+### POST /v2/supplement/api_Restrictions.do
+- **Description**: Query API Key permissions (trading, reading, withdrawal, IP restrictions)
+- **Authentication**: Yes (API Key + Signature)
+- **Category**: Account Security
+
+### POST /v2/supplement/user_info_account.do
+- **Description**: Get account information including balances and permissions (also listed in Spot Trading)
+- **Authentication**: Yes (API Key + Signature)
+- **Category**: Account Information
+
+---
+
+## 6. WebSocket APIs
+
+### WebSocket Market Data (Public)
+**URL**: wss://www.lbkex.net/ws/V2/
+
+#### Subscription: kbar (K-line/Candlestick)
+- **Description**: Subscribe to real-time K-line updates
+- **Authentication**: No
+- **Parameters**: action (subscribe/unsubscribe), subscribe (kbar), kbar (1min/5min/15min/30min/1hr/4hr/day/week/month/year), pair
+- **Request Mode**: Can request historical data with start/end/size parameters
+
+#### Subscription: depth (Order Book)
+- **Description**: Subscribe to real-time order book depth updates
+- **Authentication**: No
+- **Parameters**: action (subscribe/unsubscribe), subscribe (depth), depth (10/50/100), pair
+
+#### Subscription: trade (Trade Records)
+- **Description**: Subscribe to real-time trade execution updates
+- **Authentication**: No
+- **Parameters**: action (subscribe/unsubscribe), subscribe (trade), pair
+- **Request Mode**: Can request historical trades with size parameter
+
+#### Subscription: tick (Market Ticker)
+- **Description**: Subscribe to real-time 24hr ticker updates
+- **Authentication**: No
+- **Parameters**: action (subscribe/unsubscribe), subscribe (tick), pair
+
+#### Heartbeat: ping/pong
+- **Description**: Keep connection alive with periodic ping/pong messages
+- **Authentication**: No
+- **Parameters**: action (ping), ping (unique ID)
+
+---
+
+### WebSocket Private Data (Requires SubscribeKey)
+
+#### POST /v2/subscribe/get_key.do
+- **Description**: Create a subscribeKey for WebSocket authentication (valid for 60 minutes)
+- **Authentication**: Yes (API Key + Signature)
+- **Category**: WebSocket Authentication
+- **Returns**: subscribeKey
+
+#### POST /v2/subscribe/refresh_key.do
+- **Description**: Extend the validity of subscribeKey by another 60 minutes
+- **Authentication**: Yes (API Key + Signature)
+- **Category**: WebSocket Authentication
+- **Parameters**: subscribeKey
+
+#### POST /v2/subscribe/destroy_key.do
+- **Description**: Close/invalidate a subscribeKey and its data stream
+- **Authentication**: Yes (API Key + Signature)
+- **Category**: WebSocket Authentication
+- **Parameters**: subscribeKey
+
+#### Subscription: orderUpdate
+- **Description**: Subscribe to real-time order updates (creation, fills, status changes)
+- **Authentication**: Yes (Requires subscribeKey)
+- **Parameters**: action (subscribe), subscribe (orderUpdate), subscribeKey, pair (specific pair or "all")
+
+#### Subscription: assetUpdate
+- **Description**: Subscribe to real-time asset/balance updates (deposits, withdrawals, trading)
+- **Authentication**: Yes (Requires subscribeKey)
+- **Parameters**: action (subscribe), subscribe (assetUpdate), subscribeKey
+
+---
+
+## API Rate Limits
+
+- **Create/Cancel Order**: 500 requests per 10 seconds
+- **Other Endpoints**: 200 requests per 10 seconds
+
+---
+
+## Authentication Summary
+
+### Public APIs (No Authentication Required):
+- All Market Data APIs
+- General/Common configuration APIs (currencyPairs, accuracy, assetConfigs, timestamp)
+- WebSocket market data subscriptions (kbar, depth, trade, tick)
+
+### Private APIs (Require API Key + Signature):
+- All Wallet APIs
+- All Spot Trading APIs
+- All Account APIs
+- WebSocket subscribeKey management
+- WebSocket private data subscriptions (orderUpdate, assetUpdate)
+
+### Signature Methods Supported:
+- RSA (signature_method = RSA)
+- HmacSHA256 (signature_method = HmacSHA256)
+
+### Required Headers for Private APIs:
+- contentType: application/x-www-form-urlencoded
+- timestamp: millisecond timestamp
+- signature_method: RSA or HmacSHA256
+- echostr: random string (30-40 characters)
+- Parameters: api_key, sign
+
+---
+
+## Endpoint Summary by Category
+
+| Category | Public Endpoints | Private Endpoints | Total |
+|----------|------------------|-------------------|-------|
+| General/Common | 5 | 0 | 5 |
+| Market Data | 8 | 0 | 8 |
+| Wallet | 1 | 6 | 7 |
+| Spot Trading | 0 | 9 | 9 |
+| Account | 0 | 2 | 2 |
+| WebSocket | 5 (public) | 6 (private) | 11 |
+| **TOTAL** | **19** | **23** | **42** |
+
+---
+
+## Notes
+
+1. Some endpoints appear in multiple categories due to overlapping functionality (e.g., user_info_account appears in both Spot Trading and Account categories)
+
+2. The /v2/supplement/ prefix indicates newer/optimized versions of APIs
+
+3. Legacy endpoints (without /v2/supplement/) are still supported but newer versions are recommended
+
+4. WebSocket API provides both public market data streams and private account/order streams
+
+5. All private endpoints require proper signature generation using either RSA or HmacSHA256
+
+6. The API uses a timestamp-based replay attack prevention mechanism with a default 5-second window
+
+7. Custom order IDs (custom_id) are supported for order tracking and must be unique per user
