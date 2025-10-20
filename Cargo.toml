@@ -1,9 +1,9 @@
 [package]
 name = "lbank-rs"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 authors = ["LBank Development Team"]
-description = "Rust library for LBank API - Supports both blocking and async HTTP clients with complete REST API coverage"
+description = "Complete Rust SDK for LBank API - Market data, trading, wallet management with both sync/async support, RSA/HmacSHA256 auth"
 readme = "README.md"
 homepage = "https://www.lbank.com"
 repository = "https://github.com/mmingyeomm/lbank-rs"

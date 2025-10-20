@@ -3,7 +3,7 @@ use std::collections::BTreeMap;
 use std::time::{SystemTime, UNIX_EPOCH};
 use uuid::Uuid;
 use md5::{Md5, Digest};
-use rsa::{RsaPrivateKey, pkcs8::{DecodePrivateKey, LineEnding}, pkcs1::DecodeRsaPrivateKey, Pkcs1v15Sign};
+use rsa::{RsaPrivateKey, pkcs8::DecodePrivateKey, pkcs1::DecodeRsaPrivateKey, Pkcs1v15Sign};
 use sha2::Sha256;
 use base64::{Engine as _, engine::general_purpose};
 use hmac::{Hmac, Mac};
